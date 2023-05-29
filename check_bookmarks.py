@@ -19,7 +19,7 @@ async def fetch(session, link, timeout=None):
     #print('GET', link.href)
     try:
         with async_timeout.timeout(timeout):
-            async with session.get(link.href, timeout=timeout) as resp:
+            async with session.head(link.href, timeout=timeout) as resp:
                 status = resp.status
                 
     except ValueError:
