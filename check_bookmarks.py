@@ -9,29 +9,29 @@ import async_timeout
 import aiohttp
 import sys
 
-Link = namedtuple('Link', "href title")
+Link = namedtuple("Link", "href title")
 num_tasks = 0
 
 
 async def fetch(session, link, timeout=None):
     global num_tasks
     status = -1
-    #print('GET', link.href)
+    # print('GET', link.href)
     try:
         with async_timeout.timeout(timeout):
             async with session.head(link.href, timeout=timeout) as resp:
                 status = resp.status
-                
+
     except ValueError:
         pass
     except (aiohttp.ServerTimeoutError, asyncio.TimeoutError):
         status = -2
-        
+
     if status != 200:
         print((status, link.href, link.title))
 
     num_tasks -= 1
-    print(num_tasks, 'left')
+    print(num_tasks, "left")
 
 
 async def bound_fetch(sem, session, link, timeout=None):
@@ -44,14 +44,14 @@ async def fetch_all(links, loop):
     async with aiohttp.ClientSession(loop=loop) as session:
         tasks = [bound_fetch(sem, session, link, 8) for link in links]
         await asyncio.wait(tasks)
-    
+
 
 def run_event_loop(loop, bookmarks_file):
     global num_tasks
     root = ET.parse(bookmarks_file).getroot()
-    print('reading links file...')
-    links = [Link(p.attrib['href'], p.attrib['description']) for p in root]
-    print('reading finished.')
+    print("reading links file...")
+    links = [Link(p.attrib["href"], p.attrib["description"]) for p in root]
+    print("reading finished.")
     num_tasks = len(links)
     loop.run_until_complete(fetch_all(links, loop))
 
@@ -61,17 +61,17 @@ sigint_called = False
 
 
 def quit_program(signum, frame):
-    print('Stopping loop...')
-    asyncio.gather(*asyncio.Task.all_tasks()).cancel()    
+    print("Stopping loop...")
+    asyncio.gather(*asyncio.Task.all_tasks()).cancel()
     loop.stop()
     loop.close()
     sigint_called = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = sys.argv
     if len(args) == 1:
-        sys.stderr.write('links file name arg. missing')
+        sys.stderr.write("links file name arg. missing")
         sys.exit(1)
 
     signal.signal(signal.SIGINT, quit_program)
@@ -90,9 +90,8 @@ if __name__ == '__main__':
 
 #         except requests.exceptions.RequestException as e:
 #             pass
-    
+
 # def failing_links_from_xml(links_data):
 #     root = ET.fromstring(links_data)
 #     links = (Link(p.attrib['href'], p.attrib['description']) for p in root)
 #     sys.stdout.write(failing_links(links))
-
