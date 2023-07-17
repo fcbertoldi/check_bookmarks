@@ -16,4 +16,4 @@ sync:
 install:
 	pew new -p python3.11 -r requirements.txt -r requirements-dev.txt $(VENV_NAME)
 
-.PHONY: install
+.PHONY: install lock sync

@@ -2,4 +2,4 @@
 name = "check-bookmarks"
 version = "0.1"
 authors = [{ name = "Fernando Costa Bertoldi", email = "fcbertoldi@gmail.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
